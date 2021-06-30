@@ -4,7 +4,6 @@ import cls from './post-item.module.css';
 
 function PostItem(props) {
   const { image, title, date, excerpt, slug } = props.post;
-  console.log('🚀 ~ file: post-item.js ~ line 7 ~ PostItem ~ props', props);
 
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     day: 'numeric',
