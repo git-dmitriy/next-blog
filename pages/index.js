@@ -1,48 +1,24 @@
 import Hero from '../components/home-page/hero';
 import FeaturedPosts from '../components/home-page/featured-posts';
+import { getFeaturedPosts } from '../helpers/post-utils';
 
-const DUMMY_POSTS = [
-  {
-    slug: 'getting-started-with-nextjs',
-    title: 'Getting started with Nextjs',
-    image: 'getting-started-with-nextjs.png',
-    excertp:
-      'NextJS is the React framework for production. It gives you the best developer experience with all the features you need for production: hybrid static & server rendering, TypeScript support, smart bundling, route pre-fetching, and more. No config needed.',
-    date: '2021-06-30',
-  },
-  {
-    slug: 'getting-started-with-nextjs-2',
-    title: 'Getting started with Nextjs',
-    image: 'getting-started-with-nextjs.png',
-    excertp:
-      'NextJS is the React framework for production. It gives you the best developer experience with all the features you need for production: hybrid static & server rendering, TypeScript support, smart bundling, route pre-fetching, and more. No config needed.',
-    date: '2021-06-30',
-  },
-  {
-    slug: 'getting-started-with-nextjs-3',
-    title: 'Getting started with Nextjs',
-    image: 'getting-started-with-nextjs.png',
-    excertp:
-      'NextJS is the React framework for production. It gives you the best developer experience with all the features you need for production: hybrid static & server rendering, TypeScript support, smart bundling, route pre-fetching, and more. No config needed.',
-    date: '2021-06-30',
-  },
-  {
-    slug: 'getting-started-with-nextjs-4',
-    title: 'Getting started with Nextjs',
-    image: 'getting-started-with-nextjs.png',
-    excertp:
-      'NextJS is the React framework for production. It gives you the best developer experience with all the features you need for production: hybrid static & server rendering, TypeScript support, smart bundling, route pre-fetching, and more. No config needed.',
-    date: '2021-06-30',
-  },
-];
-
-function HomePage() {
+function HomePage({ posts }) {
   return (
     <>
       <Hero />
-      <FeaturedPosts posts={DUMMY_POSTS} />
+      <FeaturedPosts posts={posts} />
     </>
   );
+}
+
+export function getStaticProps() {
+  const featuredPosts = getFeaturedPosts();
+
+  return {
+    props: {
+      posts: featuredPosts,
+    },
+  };
 }
 
 export default HomePage;
