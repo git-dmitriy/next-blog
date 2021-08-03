@@ -1,5 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import cls from './contact-form.module.css';
+import Notification from '../ui/notification';
+
+async function sendContactData(formData) {
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    body: JSON.stringify({ ...formData }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Something went wrong!');
+  }
+}
 
 function ContactForm() {
   const [formData, setFormData] = useState({
@@ -7,21 +24,64 @@ function ContactForm() {
     name: '',
     message: '',
   });
+  const [requestStatus, setRequestStatus] = useState();
+  const [requestError, setRequestError] = useState();
+
+  useEffect(() => {
+    let timer;
+    if (requestStatus === 'success' || requestStatus === 'error') {
+      timer = setTimeout(() => {
+        setRequestStatus(null);
+        setRequestError(null);
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [requestStatus]);
 
   function onChangeHandler(event) {
     setFormData({ ...formData, [event.target.id]: event.target.value });
   }
 
-  function sendMessageHandler(event) {
+  async function sendMessageHandler(event) {
     event.preventDefault();
+    setRequestStatus('pending');
+    try {
+      await sendContactData(formData);
+      setRequestStatus('success');
+      setFormData({
+        email: '',
+        name: '',
+        message: '',
+      });
+    } catch (err) {
+      setRequestError(err.message);
+      setRequestStatus('error');
+    }
+  }
 
-    fetch('/api/contact', {
-      method: 'POST',
-      body: JSON.stringify({ ...formData }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  let notification;
+
+  if (requestStatus === 'pending') {
+    notification = {
+      status: 'pending',
+      title: 'Sending message...',
+      message: 'Your message in on its way',
+    };
+  }
+
+  if (requestStatus === 'success') {
+    notification = {
+      status: 'success',
+      title: 'Success!',
+      message: 'Message sent successfully!',
+    };
+  }
+  if (requestStatus === 'error') {
+    notification = {
+      status: 'error',
+      title: 'Error',
+      message: requestError,
+    };
   }
 
   return (
@@ -35,7 +95,7 @@ function ContactForm() {
               type='email'
               id='email'
               required
-              value={formData.enteredEmail}
+              value={formData.email}
               onChange={onChangeHandler}
             />
           </div>
@@ -45,7 +105,7 @@ function ContactForm() {
               type='text'
               id='name'
               required
-              value={formData.enteredName}
+              value={formData.name}
               onChange={onChangeHandler}
             />
           </div>
@@ -56,7 +116,7 @@ function ContactForm() {
             id='message'
             rows='5'
             required
-            value={formData.enteredMessage}
+            value={formData.message}
             onChange={onChangeHandler}
           />
         </div>
@@ -64,6 +124,13 @@ function ContactForm() {
           <button>Send Message</button>
         </div>
       </form>
+      {notification && (
+        <Notification
+          status={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
     </section>
   );
 }
