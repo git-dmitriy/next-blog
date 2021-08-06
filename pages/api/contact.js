@@ -1,6 +1,4 @@
-import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
-dotenv.config();
 
 async function handler(req, res) {
   if (req.method === 'POST') {
