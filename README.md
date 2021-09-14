@@ -2,7 +2,7 @@
 
 This is a training project from nextjs course.
 
-Tech stack:
+## Tech stack:
 
 - [Nextjs](https://nextjs.org/);
 - [Mongodb]();
